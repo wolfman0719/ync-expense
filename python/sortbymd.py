@@ -46,8 +46,9 @@ for row in ws.iter_rows():
 		sql = iris.sql.prepare("insert into ync.expenseitem(paymentto,accounts,amount,description,onbehalf) values(?,?,?,?,?)")
 		sql.execute(paymentto,accounts,amount,description,onbehalf)
 	else:
-		sql = iris.sql.prepare("update ync.expenseitem set paymentto=?,accounts=?,amount=?,onbehalf=? where description= ?")
-		sql.execute(paymentto,accounts,amount,onbehalf,description)
+		if not (amount == 0 or amount is None):
+			sql = iris.sql.prepare("update ync.expenseitem set paymentto=?,accounts=?,amount=?,onbehalf=? where description= ?")
+			sql.execute(paymentto,accounts,amount,onbehalf,description)
 
 wb.close()
 
