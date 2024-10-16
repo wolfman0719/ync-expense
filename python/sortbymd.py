@@ -73,7 +73,6 @@ for index,row in itemline.iterrows():
 	sql = iris.sql.prepare("select paymentto, accounts, amount, onbehalf from ync.expenseitem where description = ?")
 	rs = sql.execute(description)
 	for index,row in enumerate(rs):
-		paymentto = row[0]
 		accounts = row[1]
 		if (accounts is None or accounts == ''): accounts = '旅費交通費'
 		if (amount == 0 or amount is None): amount = row[2]
