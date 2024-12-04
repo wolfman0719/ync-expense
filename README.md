@@ -25,3 +25,9 @@ irispython tatekae.py .
 ```
 expense.zsh
 ```
+
+### 立て替え費用作成用スクリプト
+
+```
+tatekae.zsh
+```
