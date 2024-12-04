@@ -1,5 +1,4 @@
 # 出張報告精算書作成
-# ワークディレクトリにコピー
 # expense.zsh 年 月 日
 # 例 1202出張報告精算書.xlsxを編集する 
 # irispython expense.zsh 2024 12 02
