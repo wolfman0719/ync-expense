@@ -14,3 +14,14 @@ irispython sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
 irispython createtravelreport.py /Users/hsatoctr/work/expense/1001出張報告精算書.xlsx
 ```
 
+### 立て替え費用を計算する
+
+```
+irispython tatekae.py .
+```
+
+### 出張報告書作成用スクリプト
+
+```
+expense.zsh
+```
