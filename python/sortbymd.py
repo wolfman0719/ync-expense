@@ -43,12 +43,12 @@ for row in ws.iter_rows():
 	except Exception:
 		exist = False
 	if exist is False:
-		sql = iris.sql.prepare("insert into ync.expenseitem(paymentto,accounts,amount,description,onbehalf) values(?,?,?,?,?)")
-		sql.execute(paymentto,accounts,amount,description,onbehalf)
+		sql = iris.sql.prepare("insert into ync.expenseitem(paymentto,accounts,amount,description) values(?,?,?,?)")
+		sql.execute(paymentto,accounts,amount,description)
 	else:
 		if not (amount == 0 or amount is None):
-			sql = iris.sql.prepare("update ync.expenseitem set paymentto=?,accounts=?,amount=?,onbehalf=? where description= ?")
-			sql.execute(paymentto,accounts,amount,onbehalf,description)
+			sql = iris.sql.prepare("update ync.expenseitem set paymentto=?,accounts=?,amount=? where description= ?")
+			sql.execute(paymentto,accounts,amount,description)
 
 wb.close()
 
@@ -70,13 +70,12 @@ for index,row in itemline.iterrows():
 
 	if (accounts is None or accounts == ''): accounts = '旅費交通費'
 
-	sql = iris.sql.prepare("select paymentto, accounts, amount, onbehalf from ync.expenseitem where description = ?")
+	sql = iris.sql.prepare("select paymentto, accounts, amount from ync.expenseitem where description = ?")
 	rs = sql.execute(description)
 	for index,row in enumerate(rs):
 		accounts = row[1]
 		if (accounts is None or accounts == ''): accounts = '旅費交通費'
 		if (amount == 0 or amount is None): amount = row[2]
-		onbehalf = row[3]  
 	
 	linepos = linepos + 1
 	ws.cell(row=linepos,column=2).value = rowline[0]
