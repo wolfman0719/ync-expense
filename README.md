@@ -20,13 +20,13 @@ irispython createtravelreport.py /Users/hsatoctr/work/expense/1001出張報告�
 irispython tatekae.py .
 ```
 
-### 出張報告書作成用スクリプト
+### 経費精算日付ソートスクリプト
 
 ```
 expense.zsh 2025 02
 ```
 
-### 旅費精算書作成用スクリプト
+### 出張報告書作成用スクリプト
 
 ```
 travelreport.zsh 2025 03 12
