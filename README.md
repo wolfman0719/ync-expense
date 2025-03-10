@@ -23,13 +23,19 @@ irispython tatekae.py .
 ### 出張報告書作成用スクリプト
 
 ```
-expense.zsh
+expense.zsh 2025 02
+```
+
+### 旅費精算書作成用スクリプト
+
+```
+travelreport.zsh 2025 03 12
 ```
 
 ### 立て替え費用作成用スクリプト
 
 ```
-tatekae.zsh
+tatekae.zsh 2025 03
 ```
 
 ## 注意事項
