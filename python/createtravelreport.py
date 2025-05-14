@@ -33,9 +33,6 @@ for row in ws.iter_rows():
 	sql = iris.sql.prepare("insert into ync.expense(reportmonth,reportday,paymentto,accounts,amount,description) values(?,?,?,?,?,?)")
 	sql.execute(month,day,paymentto,accounts,amount,description)
 
-wb.close()
-
-wb = openpyxl.load_workbook(filename)
 ws = wb['印刷用']
 		
 itemline = iris.sql.exec("select max(reportmd) from ync.expense").dataframe()
