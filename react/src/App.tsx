@@ -25,58 +25,58 @@ export const App = () => {
   
   const onClickFetchExpenseItemList = (keyword: any) => {
 	
-	setIsLoading(true);
+    setIsLoading(true);
     setIsError(false);
   
-	axios
-	  .get<any>(`${Protocol}://${ServerAddress}:${ServerPort}${ApplicationName}/SearchExpenseItem/z${keyword}?IRISUsername=${Username}&IRISPassword=${Password}`)
-	  .then((result: any) => {
-	  const eitems = result.data.map((eitem: any) => ({
-		id: eitem.id,
-		description: eitem.description
+    axios
+      .get<any>(`${Protocol}://${ServerAddress}:${ServerPort}${ApplicationName}/SearchExpenseItem/z${keyword}?IRISUsername=${Username}&IRISPassword=${Password}`)
+      .then((result: any) => {
+      const eitems = result.data.map((eitem: any) => ({
+        id: eitem.id,
+	description: eitem.description
       }));
-      setExpenseItemList(eitems);
-	  })
+        setExpenseItemList(eitems);
+      })
       .catch((error: any) => {
         setIsError(true)
-		 if (error.response) {			
-		   setErrorText(error.response.data.summary);
-		 }
-		 else if (error.request) {
-		   setErrorText(error.request);
-		 } 
-		 else {
-		   setErrorText(error.message);
-		 }
+	if (error.response) {			
+	  setErrorText(error.response.data.summary);
+	}
+	else if (error.request) {
+	  setErrorText(error.request);
+	} 
+	else {
+	  setErrorText(error.message);
+	}
 
-	  })
+      })
       .finally(() => setIsLoading(false));
-  };
+    };
   
    const onClickItem = useCallback((eitemid: any) => {
-	setIsLoading(true);
-	setIsError(false);
+     setIsLoading(true);
+     setIsError(false);
 
-	axios
-	   // eslint-disable-next-line
-	  .get<any>(`${Protocol}://${ServerAddress}:${ServerPort}${ApplicationName}/ExpenseItemGetById/${eitemid}?IRISUsername=${Username}&IRISPassword=${Password}`)
-	  .then((result: any) => {
-		console.dir(result.data)
-	    setResponse(result.data);
-	  })
-      .catch((error: any) => {
-	     setIsError(true)
-		 if (error.response) {			
-		   setErrorText(error.response.data.summary);
-		 }
-		 else if (error.request) {
-		   setErrorText(error.request);
-		 } 
-		 else {
-		   setErrorText(error.message);
-		 }
+     axios
+       // eslint-disable-next-line
+       .get<any>(`${Protocol}://${ServerAddress}:${ServerPort}${ApplicationName}/ExpenseItemGetById/${eitemid}?IRISUsername=${Username}&IRISPassword=${Password}`)
+       .then((result: any) => {
+         console.dir(result.data)
+         setResponse(result.data);
+       })
+       .catch((error: any) => {
+         setIsError(true)
+	 if (error.response) {			
+	   setErrorText(error.response.data.summary);
+	 }
+	 else if (error.request) {
+	   setErrorText(error.request);
+	 } 
+	 else {
+	   setErrorText(error.message);
+	 }
 
-	  })
+       })
       .finally(() => setIsLoading(false))
   // eslint-disable-next-line
   }, []);
@@ -89,12 +89,12 @@ export const App = () => {
     return (
     <>
     <div className="title">
-	<Header />
-	</div>
+    <Header />
+    </div>
     <div className="query">
-	<Query onClickFetchExpenseItemList = {onClickFetchExpenseItemList} />
-	{isError && <p style={{ color: "red" }}>エラーが発生しました　{`${errortext}`}</p>}
-	</div>
+    <Query onClickFetchExpenseItemList = {onClickFetchExpenseItemList} />
+    {isError && <p style={{ color: "red" }}>エラーが発生しました　{`${errortext}`}</p>}
+    </div>
     <div className="expenselist" style = {{ float: "left",width: "50%",height: `${height*0.9}px`,overflow: "auto",border: "solid #000000 1px"}}>	
     {ExpenseItemListMemo}
     </div>
