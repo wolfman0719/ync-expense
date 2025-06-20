@@ -1,6 +1,5 @@
 import openpyxl
 from openpyxl import Workbook
-import iris
 import pandas
 import sys
 import datetime
@@ -8,6 +7,10 @@ import datetime
 args = sys.argv
 
 filename = args[1]
+
+sys.path += ['/opt/iris/lib/python','/opt/iris/mgr/python']
+
+import iris
 
 status = iris.cls('YNC.Expense')._KillExtent()
 wb = openpyxl.load_workbook(filename)

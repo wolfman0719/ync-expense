@@ -1,11 +1,14 @@
 import openpyxl
 from openpyxl import Workbook
-import iris
 import pandas
 import sys
 import datetime
 
 args = sys.argv
+
+sys.path += ['/opt/iris/lib/python','/opt/iris/mgr/python']
+
+import iris
 
 filename = args[1]
 
