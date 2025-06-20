@@ -7,6 +7,8 @@ import os
 
 args = sys.argv
 
+sys.path += ['/opt/iris/lib/python','/opt/iris/mgr/python']
+
 dir = args[1]
 
 files = os.listdir(dir + '/')
