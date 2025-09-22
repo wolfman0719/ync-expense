@@ -5,7 +5,7 @@
 ### 経費精算を日付でソートするおよび過去データの入力を補完する
 
 ```
-sudo python3 sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
+irispython sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
 ```
 
 ### 経費精算の内容から出張報告書を作成する
@@ -72,4 +72,4 @@ ImportError: IrisSecureStart failed: IRIS_ATTACH (-21)
 
 ### python3
 
-python3での実行は現状不安定(予期せぬエラー等が発生)なのでirispythonでの実行する方が安心
+python3での実行は現状不安定(予期せぬエラー等が発生)なのでirispythonでの実行する方が安全
