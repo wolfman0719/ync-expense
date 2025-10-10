@@ -69,7 +69,3 @@ MacOSの場合は、sudoでrootになる必要がある(IRISのオーナーがro
     from pythonint import *
 ImportError: IrisSecureStart failed: IRIS_ATTACH (-21)
 ```
-
-### python3
-
-python3での実行は現状不安定(予期せぬエラー等が発生)なのでirispythonでの実行する方が安全
