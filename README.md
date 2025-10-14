@@ -1,17 +1,25 @@
 # ワイエヌコーポレーション経費レポート作成を支援するツール
 
+## 事前準備
+
+irispythonを使用せずにpython3で実行するために以下のラッパーのインストールが必要
+
+環境変数の設定も必要
+
+https://community.intersystems.com/node/585033
+
 ## 使用方法
 
 ### 経費精算を日付でソートするおよび過去データの入力を補完する
 
 ```
-irispython sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
+python3 sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
 ```
 
 ### 経費精算の内容から出張報告書を作成する
 
 ```
-irispython createtravelreport2.py /Users/hsatoctr/work/expense/202410経費.xlsx /Users/hsatoctr/work/expense/1001出張報告精算書.xlsx 10 01
+python3 createtravelreport2.py /Users/hsatoctr/work/expense/202410経費.xlsx /Users/hsatoctr/work/expense/1001出張報告精算書.xlsx 10 01
 ```
 
 ### 立て替え費用を計算する
@@ -69,3 +77,5 @@ MacOSの場合は、sudoでrootになる必要がある(IRISのオーナーがro
     from pythonint import *
 ImportError: IrisSecureStart failed: IRIS_ATTACH (-21)
 ```
+
+事前準備のところに記載しているラッパーをインストールしていれば、この問題は発生しないはず
