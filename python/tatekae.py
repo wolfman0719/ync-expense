@@ -14,12 +14,12 @@ dir = args[1]
 files = os.listdir(dir + '/')
 nittous = []
 for file in files:
-	if '経費' in file:   
+	if '$' in file: continue
+	if '経費' in file:
 		wb = openpyxl.load_workbook(file, data_only=True)
 		ws = wb['sorted']
 		keihitotal = ws.cell(row=100,column=10).value
-		keihitotal2 = ws['J100'].value
-		
+		keihitotal2 = ws['J100'].value		
 		wb.close()
 	if '出張報告精算書' in file:
 		wb = openpyxl.load_workbook(file, data_only=True)
