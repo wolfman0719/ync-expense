@@ -61,6 +61,8 @@ for row in ws.iter_rows():
 
 wb.close()
 
+sql = None
+
 wb = openpyxl.load_workbook(outputFilename)
 		
 ws = wb['印刷用']
@@ -78,6 +80,12 @@ for index,row in itemline1.iterrows():
 minmonth = reportmonth
 minday = reportday
 
+maxdt = datetime.datetime(year=year, month=int(maxmonth), day=int(maxday))
+mindt = datetime.datetime(year=year, month=int(minmonth), day=int(minday))
+
+td = maxdt - mindt
+nights = td.days
+
 ws.cell(row=2,column=2).value = reiwayear
 ws.cell(row=2,column=4).value = maxmonth
 ws.cell(row=2,column=6).value = maxday
@@ -93,15 +101,14 @@ ws.cell(row=13,column=4).value = str(reiwayear) + '年' + minmonth + '月' + min
 ws.cell(row=13,column=12).value = str(reiwayear) + '年' + maxmonth + '月' + maxday + '日'
 
 sql = iris.sql.prepare("Select reportmonth, reportday, amount, description, paymentto from ync.expense where (reportmonth = ? and reportday >= ? and accounts = '旅費交通費') order by reportmonth, reportday")
-itemline3 = sql.execute(reportmonth,reportday).dataframe()
+itemline = sql.execute(reportmonth,reportday).dataframe()
 	
 linepos = 16
 
 hotelamount = 0
 hotelname = ''
-nights = 0
 	  
-for index,row in itemline3.iterrows():
+for index,row in itemline.iterrows():
 	rowline = list(row)
 	month = rowline[0]
 	day = rowline[1]
@@ -121,10 +128,15 @@ for index,row in itemline3.iterrows():
 	
 	if description == 'HOTEL':
 		hotelamount = hotelamount + amount
-		hotelname = hotelname + paymentto + ' '
-		nights = nights + 1 
+		hotelname = hotelname + paymentto + ' ' 
 		continue
 	if paymentto == 'JAL':
+		description = '飛行機　(' + description + ')'
+	elif paymentto == 'PEACH' :
+		description = '飛行機　(' + description + ')'
+	elif paymentto == 'SKYMARK' :
+		description = '飛行機　(' + description + ')'
+	elif paymentto == 'ANA' :
 		description = '飛行機　(' + description + ')'
 	else:
 		description = '電車　(' + description + ')'	
@@ -138,6 +150,7 @@ for index,row in itemline3.iterrows():
 
 	ws.cell(row=linepos,column=16).value = amount
 
+sql = None
 ws.cell(row=30,column=8).value = hotelamount
 ws.cell(row=30,column=2).value = hotelname
 ws.cell(row=28,column=5).value = nights
