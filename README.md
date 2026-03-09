@@ -19,7 +19,7 @@ python3 sortbymd.py /Users/hsatoctr/work/expense/202410経費.xlsx
 ### 経費精算の内容から出張報告書を作成する
 
 ```
-python3 createtravelreport2.py /Users/hsatoctr/work/expense/202410経費.xlsx /Users/hsatoctr/work/expense/1001出張報告精算書.xlsx 10 01
+python3 createtravelreport3.py /Users/hsatoctr/work/expense/202410経費.xlsx /Users/hsatoctr/work/expense/1001出張報告精算書.xlsx 10 01
 ```
 
 ### 立て替え費用を計算する
@@ -37,7 +37,7 @@ expense.zsh 2025 02
 ### 出張報告書作成用スクリプト
 
 ```
-travelreport2.zsh 2025 03 12
+travelreport3.zsh 2025 03 12
 ```
 
 ### 立て替え費用作成用スクリプト
