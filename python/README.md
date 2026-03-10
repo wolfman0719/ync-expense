@@ -19,7 +19,7 @@ inputタブに経費.xlsxファイルから該当する出張期間の交通費�
 
 修正は、Claude Codeに全て書かせた
 
-Claude Codeへの指示、および応答は、ClaudeCodeResponse.MDを参照
+Claude Codeへの指示、および応答は、ClaudeCodeInstructionsResponses.mdを参照
 
 ## 経費データを日付順に並べ替える
 
