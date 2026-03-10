@@ -30,7 +30,7 @@ mmdd出張報告精算書.xlsx形式でmmは月、ddは日です。
 この処理を行が10を超えなくなるまで繰り返してください。
 ```
 
-### ClaudeCodeの最初のレスポンス
+### Claude Codeの最初のレスポンス
 
 ```
 コードをよく読んで修正します。Read the Python file carefullyRead the Python file carefullyコード全体を把握しました。書き込みの上限は linepos > 26（linepos が 17〜26 の10行）であることを確認。マージロジックを追加します。ファイルを作成しました, ファイルを読み取りましたファイルを作成しました, ファイルを読み取りました変更内容のポイントです。
