@@ -20,13 +20,10 @@ CSSフレームワークをMaterializeに変更
 
 ```% npm install axios```
 
-## highlight.jsのインストール
-
-```% npm install highlight.js```
-
 ## ファイルコピー
 
 以下のファイルをここからダウンロードし、上で作成したテンプレートディレクトリにコピーする
+
 (このディレクトリーに存在しないファイルは、react配下からコピー)
 
 - public
