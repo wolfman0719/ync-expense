@@ -8,7 +8,7 @@ CSSフレームワークをMaterializeに変更
 
 ## materializeインストール
 
-```% cd materialize-css```
+```% cd expense```
 
 ```% npm install materialize-css```
 
@@ -27,6 +27,7 @@ CSSフレームワークをMaterializeに変更
 ## ファイルコピー
 
 以下のファイルをここからダウンロードし、上で作成したテンプレートディレクトリにコピーする
+(このディレクトリーに存在しないファイルは、react配下からコピー)
 
 - public
 
