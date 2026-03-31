@@ -3,6 +3,8 @@ Class YNC.Rest Extends %CSP.REST
 
 Parameter CONVERTINPUTSTREAM = 1;
 
+Parameter HandleCorsRequest = 1;
+
 XData UrlMap
 {
 <Routes>
@@ -160,6 +162,26 @@ ClassMethod SearchExpenseItem(pKeyword As %String) As %Status
   }
   
   quit status
+}
+
+ClassMethod OnHandleCorsRequest() As %Status
+{
+  // Get the origin
+  //Set tOrigin=$Get(%request.CgiEnvs("HTTP_ORIGIN"))
+  Set tOrigin="*"
+
+  // Allow requested origin
+  Do ..SetResponseHeaderIfEmpty("Access-Control-Allow-Origin",tOrigin)
+
+  set tMethod = "GET,POST,PUT,DELETE,OPTIONS, PATCH"
+  Do ..SetResponseHeaderIfEmpty("Access-Control-Allow-Method",tMethod)
+
+  set tHeader = "Content-Type,Authorization,X-Requested-With"
+  Do ..SetResponseHeaderIfEmpty("Access-Control-Allow-Headers",tHeader)
+
+  Do ..SetResponseHeaderIfEmpty("Access-Control-Allow-Credentials","true")
+
+  quit $$$OK
 }
 
 }
