@@ -37,7 +37,7 @@ expense.zsh 2025 02
 ### 出張報告書作成用スクリプト
 
 ```
-travelreport3.zsh 2025 03 12
+travelreport.zsh 2025 03 12
 ```
 
 ### 立て替え費用作成用スクリプト
