@@ -30,3 +30,14 @@ Claude Codeへの指示、および応答は、ClaudeCodeInstructionsResponses.m
 ### tatekae.py
 
 個人アカウントで支払った費用および出張の日当を計算する
+
+## expenseitem.py
+
+expenseitemテーブルの内容をインポート・エクスポートする
+
+### 使用方法
+
+```
+python3 expenseitem.py import file名
+python3 expenseitem.py export file名
+```
