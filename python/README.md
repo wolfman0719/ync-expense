@@ -21,6 +21,13 @@ inputタブに経費.xlsxファイルから該当する出張期間の交通費�
 
 Claude Codeへの指示、および応答は、ClaudeCodeInstructionsResponses.mdを参照
 
+### createtravelreportreport4.py
+
+出張が月をまたがる場合の対処
+
+修正は、Claude Codeに全て書かせた
+
+
 ## 経費データを日付順に並べ替える
 
 ### sortbymd.py
