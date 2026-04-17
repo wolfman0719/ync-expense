@@ -71,37 +71,18 @@ minmonth = reportmonth
 minday = reportday
 minmd = int(minmonth) * 100 + int(minday)
 
-# 帰宅ルートを検索して出張の終了日を特定する（月をまたぐケースに対応）
-# 出発日以降で最初に「大阪空港>雲雀丘花屋敷」が出現する日付を帰着日とする
-itemline1 = iris.sql.exec(
-	"select min(reportmd) from ync.expense "
-	"where accounts = '旅費交通費' and reportmd >= " + str(minmd) +
-	" and description = '大阪空港>雲雀丘花屋敷'"
-).dataframe()
+# 出発日以降の旅費交通費の最終日を取得（月をまたぐケースに対応するため reportmd で比較）
+itemline1 = iris.sql.exec("select max(+reportmd) from ync.expense where accounts = '旅費交通費' and +reportmd >= " + str(minmd)).dataframe()
 
-maxmd = None
 for index,row in itemline1.iterrows():
 	rowline = list(row)
 	maxmd = rowline[0]
-
-# 帰宅ルートが見つからない場合は出発日以降の最終旅費日を使用
-if maxmd is None:
-	itemline2 = iris.sql.exec(
-		"select max(reportmd) from ync.expense "
-		"where accounts = '旅費交通費' and reportmd >= " + str(minmd)
-	).dataframe()
-	for index,row in itemline2.iterrows():
-		rowline = list(row)
-		maxmd = rowline[0]
-
-if maxmd is None:
-	maxmd = minmd
-
-maxmd = str(int(maxmd))
-if (len(maxmd) == 3): maxmd = '0' + maxmd
-maxmonth = maxmd[0:2]
-maxday = maxmd[2:4]
-maxmd_int = int(maxmonth) * 100 + int(maxday)
+	if maxmd is None:
+		maxmd = minmd
+	maxmd = str(int(maxmd))
+	if (len(maxmd) == 3): maxmd = '0' + maxmd
+	maxmonth = maxmd[0:2]
+	maxday = maxmd[2:4]
 
 maxdt = datetime.datetime(year=year, month=int(maxmonth), day=int(maxday))
 mindt = datetime.datetime(year=year, month=int(minmonth), day=int(minday))
@@ -123,6 +104,7 @@ ws.cell(row=8,column=18).value = maxday
 ws.cell(row=13,column=4).value = str(reiwayear) + '年' + minmonth + '月' + minday + '日'
 ws.cell(row=13,column=12).value = str(reiwayear) + '年' + maxmonth + '月' + maxday + '日'
 
+maxmd_int = int(maxmonth) * 100 + int(maxday)
 sql = iris.sql.prepare("Select reportmonth, reportday, amount, description, paymentto from ync.expense where (+reportmd >= ? and +reportmd <= ? and accounts = '旅費交通費') order by reportmonth, reportday")
 itemline = sql.execute(minmd, maxmd_int).dataframe()
 
@@ -168,11 +150,49 @@ for index,row in itemline.iterrows():
 		transport_type = '電車'
 
 	full_description = transport_type + '　(' + description + ')'
-	items.append({'month': month, 'day': day, 'amount': amount, 'description': full_description, 'transport_type': transport_type, 'route': description})
+	items.append({'month': month, 'day': day, 'end_month': month, 'end_day': day, 'amount': amount, 'description': full_description, 'transport_type': transport_type, 'route': description})
+
+
+# description の最大文字数。これ以上になる場合はマージしない
+MAX_DESC_LENGTH = 24
+
+
+def _connect_routes(routes):
+	"""隣接する区間で到着駅と次の出発駅が同じ場合は繋げて A>B>C 形式にする"""
+	result = routes[0]
+	for r in routes[1:]:
+		prev_arrival = result.split('>')[-1]
+		next_departure = r.split('>')[0]
+		if prev_arrival == next_departure:
+			result = result + '>' + '>'.join(r.split('>')[1:])
+		else:
+			result = result + ' ' + r
+	return result
+
+
+def _reorder_group_for_connection(group):
+	"""グループ内を並び替えて、到着点と次の出発点が一致する項目を隣接させる。
+	先頭項目は固定し、残りの項目から到着点に一致する出発点を持つものを貪欲に選ぶ。"""
+	if len(group) <= 1:
+		return group
+	result = [group[0]]
+	remaining = list(group[1:])
+	while remaining:
+		cur_arrival = result[-1]['route'].split('>')[-1]
+		picked = -1
+		for k, it in enumerate(remaining):
+			if it['route'].split('>')[0] == cur_arrival:
+				picked = k
+				break
+		if picked == -1:
+			picked = 0
+		result.append(remaining.pop(picked))
+	return result
 
 
 def merge_same_day(items, merge_count):
-	"""同じ日付かつ同じ交通手段の行を merge_count 件ずつ1行にまとめる処理を1パス行う"""
+	"""同じ日付かつ同じ交通手段の行を merge_count 件ずつ1行にまとめる処理を1パス行う。
+	マージ対象グループ内は、到着点と次の出発点が一致する項目が隣接するよう並び替える。"""
 	merged = []
 	i = 0
 	while i < len(items):
@@ -189,24 +209,22 @@ def merge_same_day(items, merge_count):
 			else:
 				break
 		if len(group) >= 2:
-			# ルート部分を結合する
-			# 隣接する区間で到着駅と次の出発駅が同じ場合は繋げて A>B>C 形式にする
-			def connect_routes(routes):
-				result = routes[0]
-				for r in routes[1:]:
-					prev_arrival = result.split('>')[-1]
-					next_departure = r.split('>')[0]
-					if prev_arrival == next_departure:
-						result = result + '>' + '>'.join(r.split('>')[1:])
-					else:
-						result = result + ' ' + r
-				return result
-			merged_route = connect_routes([item['route'] for item in group])
+			# ルートが繋がるように並び替える（終点と起点が同じ項目を優先）
+			group = _reorder_group_for_connection(group)
+			merged_route = _connect_routes([item['route'] for item in group])
 			merged_desc = base['transport_type'] + '　(' + merged_route + ')'
+			if len(merged_desc) >= MAX_DESC_LENGTH:
+				# マージ後の description が長すぎる場合はマージしない
+				merged.append(base)
+				i += 1
+				continue
 			merged_amount = sum(item['amount'] for item in group)
+			last = group[-1]
 			merged.append({
 				'month': base['month'],
 				'day': base['day'],
+				'end_month': last.get('end_month', last['month']),
+				'end_day': last.get('end_day', last['day']),
 				'amount': merged_amount,
 				'description': merged_desc,
 				'transport_type': base['transport_type'],
@@ -216,6 +234,85 @@ def merge_same_day(items, merge_count):
 		else:
 			merged.append(base)
 			i += 1
+	return merged
+
+
+def merge_same_transport(items, merge_count):
+	"""transport_typeが同じ行を merge_count 件ずつ1行にまとめる処理を1パス行う。
+	日付が異なっても同一 transport_type であればマージ対象とする。
+	項目選択時は、現在のグループの到着点と出発点が一致する項目を優先し、
+	伊丹>羽田 と 羽田>伊丹 のような往復を繋いでまとめる。"""
+	used = [False] * len(items)
+	merged = []
+	for i in range(len(items)):
+		if used[i]:
+			continue
+		base = items[i]
+		group = [base]
+		used[i] = True
+		added_indices = []  # この反復で used にしたインデックス (rollback 用)
+		# 現在のグループに項目を追加する。
+		# 1st 優先: 同一 transport_type で、現在の末尾ルートの到着点から出発する項目
+		# 2nd 優先: 同一 transport_type で先頭に見つかる項目
+		while len(group) < merge_count:
+			cur_arrival = group[-1]['route'].split('>')[-1]
+			chosen = -1
+			for j in range(i + 1, len(items)):
+				if used[j]:
+					continue
+				if items[j]['transport_type'] != base['transport_type']:
+					continue
+				if items[j]['route'].split('>')[0] == cur_arrival:
+					chosen = j
+					break
+			if chosen == -1:
+				for j in range(i + 1, len(items)):
+					if used[j]:
+						continue
+					if items[j]['transport_type'] == base['transport_type']:
+						chosen = j
+						break
+			if chosen == -1:
+				break
+			# 追加候補を入れた場合の merged_desc を事前に確認し、
+			# MAX_DESC_LENGTH 以上になるなら追加せず打ち切る
+			tentative = _reorder_group_for_connection(group + [items[chosen]])
+			tentative_route = _connect_routes([it['route'] for it in tentative])
+			tentative_desc = base['transport_type'] + '　(' + tentative_route + ')'
+			if len(tentative_desc) >= MAX_DESC_LENGTH:
+				break
+			group.append(items[chosen])
+			used[chosen] = True
+			added_indices.append(chosen)
+		if len(group) >= 2:
+			# 選択後にもう一度並び替えて、可能な限り繋がるようにする
+			group = _reorder_group_for_connection(group)
+			merged_route = _connect_routes([item['route'] for item in group])
+			merged_desc = base['transport_type'] + '　(' + merged_route + ')'
+			if len(merged_desc) >= MAX_DESC_LENGTH:
+				# 念のためもう一度チェック。長すぎる場合はマージせず、
+				# 追加した項目を未使用に戻して base だけ出力する
+				for idx in added_indices:
+					used[idx] = False
+				merged.append(base)
+				continue
+			merged_amount = sum(item['amount'] for item in group)
+			# 最終日付は group 内で最も遅い日付を採用する
+			def _md(it):
+				return int(it.get('end_month', it['month'])) * 100 + int(it.get('end_day', it['day']))
+			last = max(group, key=_md)
+			merged.append({
+				'month': base['month'],
+				'day': base['day'],
+				'end_month': last.get('end_month', last['month']),
+				'end_day': last.get('end_day', last['day']),
+				'amount': merged_amount,
+				'description': merged_desc,
+				'transport_type': base['transport_type'],
+				'route': merged_route
+			})
+		else:
+			merged.append(base)
 	return merged
 
 
@@ -231,6 +328,17 @@ while len(items) > MAX_LINES:
 		merge_count += 1
 		if merge_count > 100:
 			# 無限ループ防止: これ以上マージできない場合は打ち切り
+			break
+
+# それでも MAX_LINES を超える場合は、日付が異なっても同一 transport_type の行をマージ
+merge_count = 2
+while len(items) > MAX_LINES:
+	prev_len = len(items)
+	items = merge_same_transport(items, merge_count)
+	if len(items) == prev_len:
+		merge_count += 1
+		if merge_count > 100:
+			# 無限ループ防止: これ以上マージできない場合は打ち切り
 			print('# of lineitems exceeded the max limit even after merging')
 			break
 
@@ -239,7 +347,10 @@ linepos = 16
 for item in items:
 	linepos += 1
 	ws.cell(row=linepos, column=1).value = str(item['month']) + '/' + str(item['day'])
-	ws.cell(row=linepos, column=6).value = str(item['month']) + '/' + str(item['day'])
+	# マージ結果で開始日と最終日が異なる場合はカラム6に最終日付を設定する
+	end_month = item.get('end_month', item['month'])
+	end_day = item.get('end_day', item['day'])
+	ws.cell(row=linepos, column=6).value = str(end_month) + '/' + str(end_day)
 	ws.cell(row=linepos, column=10).value = item['description']
 	ws.cell(row=linepos, column=16).value = item['amount']
 
