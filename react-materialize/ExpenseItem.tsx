@@ -112,43 +112,28 @@ export const ExpenseItem = (props: any) => {
       <table>
         <tbody>
           <tr>
-            <td width={100}><label>備考：</label></td>
             <td>
-              <div className="input-field" style={{ margin: 0 }}>
-                <input type="text" value={description} onChange={onChangeDescription} size={50} />
-              </div>
+              <input type="text" placeholder="備考" value={description} onChange={onChangeDescription} size={50} className="expense-input" />
             </td>
           </tr>
           <tr>
-            <td width={100}><label>支払先：</label></td>
             <td>
-              <div className="input-field" style={{ margin: 0 }}>
-                <input type="text" value={paymentto} onChange={onChangePaymentto} />
-              </div>
+              <input type="text" placeholder="支払先" value={paymentto} onChange={onChangePaymentto} className="expense-input" />
             </td>
           </tr>
           <tr>
-            <td width={100}><label>勘定科目：</label></td>
             <td>
-              <div className="input-field" style={{ margin: 0 }}>
-                <input type="text" value={accounts} onChange={onChangeAccounts} />
-              </div>
+              <input type="text" placeholder="勘定科目" value={accounts} onChange={onChangeAccounts} className="expense-input" />
             </td>
           </tr>
           <tr>
-            <td width={100}><label>金額：</label></td>
             <td>
-              <div className="input-field" style={{ margin: 0 }}>
-                <input type="text" value={amount} onChange={onChangeAmount} />
-              </div>
+              <input type="text" placeholder="金額" value={amount} onChange={onChangeAmount} className="expense-input" />
             </td>
           </tr>
           <tr>
-            <td width={100}><label>立て替え：</label></td>
             <td>
-              <div className="input-field" style={{ margin: 0 }}>
-                <input type="text" value={onbehalf} onChange={onChangeBehalf} />
-              </div>
+              <input type="text" placeholder="立て替え" value={onbehalf} onChange={onChangeBehalf} className="expense-input" />
             </td>
           </tr>
         </tbody>
@@ -157,7 +142,7 @@ export const ExpenseItem = (props: any) => {
       {(deleted === false) &&
         <button
           className="btn blue darken-1 waves-effect waves-light"
-          style={{ marginRight: "8px" }}
+          style={{ marginRight: "8px", borderRadius: "24px" }}
           onClick={saveExpense}
         >
           保存
@@ -166,6 +151,7 @@ export const ExpenseItem = (props: any) => {
       {(deleted === false) &&
         <button
           className="btn red darken-1 waves-effect waves-light"
+          style={{ borderRadius: "24px" }}
           onClick={deleteExpense}
         >
           削除

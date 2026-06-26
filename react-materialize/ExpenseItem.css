@@ -1,0 +1,26 @@
+.container {
+  margin: 40px;
+}
+
+.spacer {
+  margin-top: 10px;
+}
+
+button {
+  margin-left: 170px;
+}
+
+.expense-input {
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 4px 8px !important;
+  font-size: 1rem !important;
+  box-shadow: none !important;
+  outline: none;
+  height: auto !important;
+  margin-bottom: 4px !important;
+}
+
+.expense-list-item:hover {
+  background-color: #b2ebf2 !important;
+}
