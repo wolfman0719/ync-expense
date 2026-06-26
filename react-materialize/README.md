@@ -32,6 +32,8 @@ CSSフレームワークをMaterializeに変更
 
   intersystems.css
 
+  yncorporation.png
+
 - src
 
   index.tsx
